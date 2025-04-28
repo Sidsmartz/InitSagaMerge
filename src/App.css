@@ -1,6 +1,37 @@
 #root {
   width: 100vw;
   height: 100vh;
-  background-color: #d9afd9;
-  background-image: linear-gradient(0deg, #d9afd9 0%, #97d9e1 100%);
+  background-color: #121212; /* Dark gray background */
+  font-family: 'Arial', sans-serif;
+  font-weight: 200; /* Extra-light font */
+  color: #ffffff; /* White text */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+h1, p, ul, li, a {
+  font-weight: 200; /* Extra-light font */
+  color: #ffffff; /* White text */
+}
+
+a {
+  text-decoration: none;
+  color: #1e90ff; /* Light blue for links */
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
