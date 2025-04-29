@@ -27,6 +27,27 @@ const Section = ({ right, opacity, children }) => (
   </section>
 );
 
+// Sticky scroll indicator arrow for call to action
+const ScrollIndicator = () => (
+  <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
+    <div className="animate-bounce opacity-60 transition-opacity">
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-emerald-300 drop-shadow"
+      >
+        <path d="M12 5v14M19 12l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+);
+
 export const Overlay = () => {
   const scroll   = useScroll();
   const navigate = useNavigate();
@@ -43,7 +64,7 @@ export const Overlay = () => {
   return (
     <Scroll html>
       {/* full-screen blur behind everything */}
-      <div className="fixed inset-0 pointer-events-none " />
+      <div className="fixed inset-0 pointer-events-none" />
 
       <div className="w-screen font-sans text-green-300 relative">
         {/* ---------- first section ---------------------------------- */}
@@ -81,8 +102,7 @@ export const Overlay = () => {
 
         {/* ---------- last section ---------------------------------- */}
         <Section opacity={op[2]}>
-          <h1 className="text-2xl mb-6 font-sans">🌱 Build Your Dream Garden
-          </h1>
+          <h1 className="text-2xl mb-6 font-sans">🌱 Build Your Dream Garden</h1>
           <button
             onClick={() => navigate("/tile")}
             className="px-6 py-2 rounded-full border border-emerald-300
@@ -100,6 +120,9 @@ export const Overlay = () => {
             Go to Plant Database
           </button>
         </Section>
+
+        {/* Sticky Scroll Indicator (call to action) */}
+        <ScrollIndicator />
       </div>
     </Scroll>
   );

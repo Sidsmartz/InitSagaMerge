@@ -33,6 +33,9 @@ function RightPane({
   weatherError,
 }) {
   const [location, setLocation] = useState("");
+  const textColor = weather === "sunny" ? "text-black" : "text-white";
+  const accentColor = weather === "sunny" ? "text-emerald-800" : "text-emerald-400";
+  const labelColor = weather === "sunny" ? "text-black/80" : "text-white/80";
 
   const handleLocationChange = (e) => {
     setLocation(e.target.value);
@@ -74,47 +77,47 @@ function RightPane({
   return (
     <>
       {/* Controls Panel */}
-      <div className="fixed top-6 right-6 z-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-xl shadow-lg p-6 flex flex-col min-w-[220px] max-w-[320px] text-white max-h-[calc(100vh-4rem)] overflow-y-auto">
+      <div className={`fixed top-6 right-6 z-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-xl shadow-lg p-6 flex flex-col min-w-[220px] max-w-[320px] ${textColor} max-h-[calc(100vh-4rem)] overflow-y-auto`}>
         <div className="flex items-center justify-between mb-4 sticky top-0 bg-white/10 backdrop-blur-md p-2 rounded">
-          <span className="font-sans text-lg">Controls</span>
-        <Link
-          to="/"
+          <span className={`font-sans text-lg ${textColor}`}>Controls</span>
+          <Link
+            to="/"
             className="px-3 py-1 rounded bg-plant-green text-plant-gray hover:bg-green-400 text-sm font-sans"
-        >
-          Home
-        </Link>
-      </div>
+          >
+            Home
+          </Link>
+        </div>
 
         {/* Weather Controls */}
-      <div className="mb-4">
-        <label className="text-xs text-white/80 mb-1 block">Weather</label>
+        <div className="mb-4">
+          <label className={`text-xs ${labelColor} mb-1 block`}>Weather</label>
           <div className="flex space-x-2 mb-2">
-          <button
-            onClick={() => onChangeWeather("sunny")}
+            <button
+              onClick={() => onChangeWeather("sunny")}
               className={`px-3 py-1 rounded text-xs font-sans ${weather === "sunny" ? 'bg-yellow-500' : 'bg-yellow-500/50'}`}
-          >
-            Sunny
-          </button>
-          <button
-            onClick={() => onChangeWeather("rainy")}
+            >
+              Sunny
+            </button>
+            <button
+              onClick={() => onChangeWeather("rainy")}
               className={`px-3 py-1 rounded text-xs font-sans ${weather === "rainy" ? 'bg-blue-500' : 'bg-blue-500/50'}`}
-          >
-            Rainy
-          </button>
-          <button
-            onClick={() => onChangeWeather("snowy")}
+            >
+              Rainy
+            </button>
+            <button
+              onClick={() => onChangeWeather("snowy")}
               className={`px-3 py-1 rounded text-white text-xs font-sans ${weather === "snowy" ? 'bg-white' : 'bg-white/50'}`}
-          >
-            Snowy
-          </button>
-        </div>
+            >
+              Snowy
+            </button>
+          </div>
           
           {/* Weather Info Display */}
           {weatherInfo && (
             <div className="bg-white/10 rounded-lg p-3 mb-2 text-sm">
-              <p className="text-emerald-300">Current Weather in {weatherInfo.location}</p>
-              <p className="text-white">{weatherInfo.condition}</p>
-              <p className="text-white">{weatherInfo.temp_c}°C / {weatherInfo.temp_f}°F</p>
+              <p className={accentColor}>Current Weather in {weatherInfo.location}</p>
+              <p className={textColor}>{weatherInfo.condition}</p>
+              <p className={textColor}>{weatherInfo.temp_c}°C / {weatherInfo.temp_f}°F</p>
             </div>
           )}
           {weatherError && (
@@ -122,49 +125,49 @@ function RightPane({
               {weatherError}
             </div>
           )}
-      </div>
+        </div>
 
         {/* Location Search */}
-      <div className="mb-4">
-          <label className="text-xs text-white/80 mb-1 block">Search Location</label>
+        <div className="mb-4">
+          <label className={`text-xs ${labelColor} mb-1 block`}>Search Location</label>
           <div className="flex space-x-2">
-        <input
-          type="text"
-          value={location}
-          onChange={handleLocationChange}
-              className="flex-1 border border-white/20 bg-white/10 text-white rounded p-2"
-          placeholder="Enter location"
-        />
-        <button
-          onClick={handleSearch}
+            <input
+              type="text"
+              value={location}
+              onChange={handleLocationChange}
+              className={`flex-1 border border-white/20 bg-white/10 ${textColor} rounded p-2`}
+              placeholder="Enter location"
+            />
+            <button
+              onClick={handleSearch}
               className="px-4 py-2 rounded bg-emerald-400 text-gray-900 font-sans hover:bg-emerald-300"
-        >
+            >
               Search
-        </button>
+            </button>
           </div>
-      </div>
+        </div>
 
-      {/* Grid Settings */}
-      <div className="mb-4">
-        <label className="text-xs text-white/80 mb-1 block">Grid Width</label>
-        <input
-          type="number"
-          min="1"
-          className="border border-white/20 bg-white/10 text-white rounded p-2 w-full mb-2"
-          value={width}
-          onChange={(e) => setWidth(+e.target.value)}
-          placeholder="Width"
-        />
-        <label className="text-xs text-white/80 mb-1 block">Grid Height</label>
-        <input
-          type="number"
-          min="1"
-          className="border border-white/20 bg-white/10 text-white rounded p-2 w-full"
-          value={height}
-          onChange={(e) => setHeight(+e.target.value)}
-          placeholder="Height"
-        />
-      </div>
+        {/* Grid Settings */}
+        <div className="mb-4">
+          <label className={`text-xs ${labelColor} mb-1 block`}>Grid Width</label>
+          <input
+            type="number"
+            min="1"
+            className={`border border-white/20 bg-white/10 ${textColor} rounded p-2 w-full mb-2`}
+            value={width}
+            onChange={(e) => setWidth(+e.target.value)}
+            placeholder="Width"
+          />
+          <label className={`text-xs ${labelColor} mb-1 block`}>Grid Height</label>
+          <input
+            type="number"
+            min="1"
+            className={`border border-white/20 bg-white/10 ${textColor} rounded p-2 w-full`}
+            value={height}
+            onChange={(e) => setHeight(+e.target.value)}
+            placeholder="Height"
+          />
+        </div>
 
         {/* Add Plant Button */}
         {selectedTile && !plant && (
@@ -175,70 +178,70 @@ function RightPane({
             Add Plant
           </button>
         )}
-          </div>
+      </div>
 
       {/* Plant Info Panel */}
       {selectedTile && plant && (
-        <div className="fixed top-6 left-6 z-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-xl shadow-lg p-8 flex flex-col min-w-[360px] max-w-[480px] text-white max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="flex flex-col items-center">
-              <img
-                src={plant.img}
-                alt={plant.name}
+        <div className={`fixed top-6 left-6 z-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-xl shadow-lg p-8 flex flex-col min-w-[360px] max-w-[480px] ${textColor} max-h-[calc(100vh-4rem)] overflow-y-auto`}>
+          <div className="flex flex-col items-center">
+            <img
+              src={plant.img}
+              alt={plant.name}
               className="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-emerald-400"
-              />
-            <h2 className="font-sans text-2xl mb-3 text-emerald-400">{plant.name}</h2>
+            />
+            <h2 className={`font-sans text-2xl mb-3 ${accentColor}`}>{plant.name}</h2>
             <div className="w-full p-4 bg-black/20 rounded-lg mb-4">
-              <div className="font-sans text-sm mb-2 text-emerald-300">Position: ({selectedTile.x}, {selectedTile.z})</div>
-              <div className="font-sans text-sm mb-2 text-emerald-300">Size: {plant.size[0]}x{plant.size[1]} tiles</div>
+              <div className={`font-sans text-sm mb-2 ${accentColor}`}>Position: ({selectedTile.x}, {selectedTile.z})</div>
+              <div className={`font-sans text-sm mb-2 ${accentColor}`}>Size: {plant.size[0]}x{plant.size[1]} tiles</div>
             </div>
-              {isZoomed ? (
+            {isZoomed ? (
               <div className="w-full text-sm mb-4 space-y-3">
                 <div className="p-4 bg-black/20 rounded-lg">
-                  <h3 className="text-lg mb-2 text-emerald-400">Plant Status</h3>
+                  <h3 className={`text-lg mb-2 ${accentColor}`}>Plant Status</h3>
                   <div className="mb-2">
-                    Last watered: <span className="text-emerald-300 font-medium">{zoomedInfo.lastWatered}</span>
+                    Last watered: <span className={accentColor}>{zoomedInfo.lastWatered}</span>
                   </div>
                   <div className="mb-2">
-                    Sunlight this week: <span className="text-emerald-300 font-medium">{zoomedInfo.sunlight}</span>
+                    Sunlight this week: <span className={accentColor}>{zoomedInfo.sunlight}</span>
                   </div>
                   <div className="mb-2">
-                    Health: <span className="text-emerald-300 font-medium">{zoomedInfo.health}%</span>
+                    Health: <span className={accentColor}>{zoomedInfo.health}%</span>
                   </div>
                   <div className="mb-2">
-                    Water this week: <span className="text-emerald-300 font-medium">{zoomedInfo.waterThisWeek}/{zoomedInfo.waterGoal}</span>
-                  </div>
+                    Water this week: <span className={accentColor}>{zoomedInfo.waterThisWeek}/{zoomedInfo.waterGoal}</span>
                   </div>
                 </div>
-              ) : (
+              </div>
+            ) : (
               <div className="w-full text-sm mb-4 space-y-3">
                 <div className="p-4 bg-black/20 rounded-lg">
-                  <h3 className="text-lg mb-2 text-emerald-400">Plant Details</h3>
+                  <h3 className={`text-lg mb-2 ${accentColor}`}>Plant Details</h3>
                   <div className="mb-2">
-                    Type: <span className="text-emerald-300 font-medium">{generalInfo.type}</span>
+                    Type: <span className={accentColor}>{generalInfo.type}</span>
                   </div>
                   <div className="mb-2">
-                    Season: <span className="text-emerald-300 font-medium">{generalInfo.season}</span>
+                    Season: <span className={accentColor}>{generalInfo.season}</span>
                   </div>
                   <div className="mb-2">
-                    Water needed: <span className="text-emerald-300 font-medium">{generalInfo.waterNeeded}</span>
+                    Water needed: <span className={accentColor}>{generalInfo.waterNeeded}</span>
                   </div>
                   <div className="mb-2">
-                    Seed rate: <span className="text-emerald-300 font-medium">{generalInfo.seedRate}</span>
+                    Seed rate: <span className={accentColor}>{generalInfo.seedRate}</span>
                   </div>
                 </div>
                 <div className="p-4 bg-black/20 rounded-lg">
-                  <h3 className="text-lg mb-2 text-emerald-400">Description</h3>
-                  <p className="text-white/90 leading-relaxed">{plant.description}</p>
+                  <h3 className={`text-lg mb-2 ${accentColor}`}>Description</h3>
+                  <p className={`${textColor}/90 leading-relaxed`}>{plant.description}</p>
                 </div>
-                </div>
-              )}
-              <button
-                onClick={onRemovePlant}
+              </div>
+            )}
+            <button
+              onClick={onRemovePlant}
               className="px-6 py-2 rounded-lg bg-red-500 text-white text-sm font-sans hover:bg-red-600 transition-colors"
-              >
-                Remove Plant
-              </button>
-            </div>
+            >
+              Remove Plant
+            </button>
+          </div>
         </div>
       )}
 
