@@ -26,8 +26,8 @@ export const Experience = () => {
       {/* Scroll and Orbit controls */}
       <OrbitControls enableZoom={false} />
       <ScrollControls pages={3} damping={0.5} html>
-        <Office/>
-        <Overlay/>
+        <Office />
+        <Overlay />
       </ScrollControls>
     </>
   );
