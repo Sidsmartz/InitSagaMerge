@@ -23,17 +23,17 @@ function RightPane({
   zoomedPlantTile,
   onChangeWeather,
   weather,
-  onLocationSearch, // Added prop for location search handler
+  onLocationSearch,
 }) {
-  const [location, setLocation] = useState(""); // State for the location input
+  const [location, setLocation] = useState("");
 
   const handleLocationChange = (e) => {
-    setLocation(e.target.value); // Update the location state when the user types
+    setLocation(e.target.value);
   };
 
   const handleSearch = () => {
     if (location.trim()) {
-      onLocationSearch(location); // Trigger the search when the user submits the location
+      onLocationSearch(location);
     }
   };
 
@@ -65,171 +65,166 @@ function RightPane({
     zoomedPlantTile.z === selectedTile.z;
 
   return (
-    <div className="fixed top-6 right-6 z-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-xl shadow-lg p-6 flex flex-col min-w-[220px] max-w-[320px] text-white">
-      <div className="flex items-center justify-between mb-4">
-        <span className="font-sans text-lg">Customise</span>
-        <Link
-          to="/"
-          className="ml-2 px-3 py-1 rounded bg-plant-green text-plant-gray hover:bg-green-400 text-sm font-sans"
-        >
-          Home
-        </Link>
-      </div>
+    <>
+      {/* Controls Panel */}
+      <div className="fixed top-6 right-6 z-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-xl shadow-lg p-6 flex flex-col min-w-[220px] max-w-[320px] text-white max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4 sticky top-0 bg-white/10 backdrop-blur-md p-2 rounded">
+          <span className="font-sans text-lg">Controls</span>
+          <Link
+            to="/"
+            className="ml-2 px-3 py-1 rounded bg-plant-green text-plant-gray hover:bg-green-400 text-sm font-sans"
+          >
+            Home
+          </Link>
+        </div>
 
-      {/* Weather Toggle Buttons */}
-      <div className="mb-4">
-        <label className="text-xs text-white/80 mb-1 block">Weather</label>
-        <div className="flex space-x-2">
+        {/* Weather Controls */}
+        <div className="mb-4">
+          <label className="text-xs text-white/80 mb-1 block">Weather</label>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => onChangeWeather("sunny")}
+              className={`px-3 py-1 rounded text-xs font-sans ${weather === "sunny" ? 'bg-yellow-500' : 'bg-yellow-500/50'}`}
+            >
+              Sunny
+            </button>
+            <button
+              onClick={() => onChangeWeather("rainy")}
+              className={`px-3 py-1 rounded text-xs font-sans ${weather === "rainy" ? 'bg-blue-500' : 'bg-blue-500/50'}`}
+            >
+              Rainy
+            </button>
+            <button
+              onClick={() => onChangeWeather("snowy")}
+              className={`px-3 py-1 rounded text-white text-xs font-sans ${weather === "snowy" ? 'bg-white' : 'bg-white/50'}`}
+            >
+              Snowy
+            </button>
+          </div>
+        </div>
+
+        {/* Location Search */}
+        <div className="mb-4">
+          <label className="text-xs text-white/80 mb-1 block">Search Location</label>
+          <input
+            type="text"
+            value={location}
+            onChange={handleLocationChange}
+            className="border border-white/20 bg-white/10 text-white rounded p-2 w-full mb-2"
+            placeholder="Enter location"
+          />
           <button
-            onClick={() => onChangeWeather("sunny")}
-            className="px-3 py-1 rounded bg-yellow-500 text-white text-xs font-sans"
+            onClick={handleSearch}
+            className="px-4 py-1 rounded bg-emerald-400 text-gray-900 font-sans hover:bg-emerald-300 w-full"
           >
-            Sunny
-          </button>
-          <button
-            onClick={() => onChangeWeather("rainy")}
-            className="px-3 py-1 rounded bg-blue-500 text-white text-xs font-sans"
-          >
-            Rainy
-          </button>
-          <button
-            onClick={() => onChangeWeather("snowy")}
-            className="px-3 py-1 rounded bg-white text-black text-xs font-sans"
-          >
-            Snowy
+            Search Weather
           </button>
         </div>
+
+        {/* Grid Settings */}
+        <div className="mb-4">
+          <label className="text-xs text-white/80 mb-1 block">Grid Width</label>
+          <input
+            type="number"
+            min="1"
+            className="border border-white/20 bg-white/10 text-white rounded p-2 w-full mb-2"
+            value={width}
+            onChange={(e) => setWidth(+e.target.value)}
+            placeholder="Width"
+          />
+          <label className="text-xs text-white/80 mb-1 block">Grid Height</label>
+          <input
+            type="number"
+            min="1"
+            className="border border-white/20 bg-white/10 text-white rounded p-2 w-full"
+            value={height}
+            onChange={(e) => setHeight(+e.target.value)}
+            placeholder="Height"
+          />
+        </div>
+
+        {/* Add Plant Button */}
+        {selectedTile && !plant && (
+          <button
+            onClick={onShowPicker}
+            className="px-4 py-2 rounded bg-emerald-400 text-gray-900 font-sans hover:bg-emerald-300 w-full mt-2"
+          >
+            Add Plant
+          </button>
+        )}
       </div>
 
-      {/* Location Search Box */}
-      <div className="mb-4">
-        <label className="text-xs text-white/80 mb-1 block">
-          Search Location
-        </label>
-        <input
-          type="text"
-          value={location}
-          onChange={handleLocationChange}
-          className="border border-white/20 bg-white/10 text-white rounded p-2 w-full mb-2"
-          placeholder="Enter location"
-        />
-        <button
-          onClick={handleSearch}
-          className="px-4 py-1 rounded bg-emerald-400 text-gray-900 font-sans hover:bg-emerald-300 w-full"
-        >
-          Search Weather
-        </button>
-      </div>
-
-      {/* Grid Settings */}
-      <div className="mb-4">
-        <label className="text-xs text-white/80 mb-1 block">Grid Width</label>
-        <input
-          type="number"
-          min="1"
-          className="border border-white/20 bg-white/10 text-white rounded p-2 w-full mb-2"
-          value={width}
-          onChange={(e) => setWidth(+e.target.value)}
-          placeholder="Width"
-        />
-        <label className="text-xs text-white/80 mb-1 block">Grid Height</label>
-        <input
-          type="number"
-          min="1"
-          className="border border-white/20 bg-white/10 text-white rounded p-2 w-full"
-          value={height}
-          onChange={(e) => setHeight(+e.target.value)}
-          placeholder="Height"
-        />
-      </div>
-
-      {/* Selected Tile Details */}
-      {selectedTile && (
-        <div className="mt-4 border-t border-white/20 pt-4">
-          <div className="font-sans mb-2">
-            Selected Tile: ({selectedTile.x}, {selectedTile.z})
-          </div>
-          {plant ? (
-            <div className="flex flex-col items-center">
-              <img
-                src={plant.img}
-                alt={plant.name}
-                className="w-20 h-20 rounded mb-2 object-cover border-2 border-emerald-400"
-              />
-              <div className="font-sans text-base mb-1">{plant.name}</div>
-              {isZoomed ? (
-                <div className="w-full text-xs text-white/80 mb-2 text-center">
-                  <div className="mb-1">
-                    Last watered:{" "}
-                    <span className="text-green-300">
-                      {zoomedInfo.lastWatered}
-                    </span>
-                  </div>
-                  <div className="mb-1">
-                    Sunlight this week:{" "}
-                    <span className="text-green-300">
-                      {zoomedInfo.sunlight}
-                    </span>
-                  </div>
-                  <div className="mb-1">
-                    Health:{" "}
-                    <span className="text-green-300">{zoomedInfo.health}%</span>
-                  </div>
-                  <div className="mb-1">
-                    Water this week:{" "}
-                    <span className="text-green-300">
-                      {zoomedInfo.waterThisWeek}/{zoomedInfo.waterGoal}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full text-xs text-white/80 mb-2 text-center">
-                  <div className="mb-1">
-                    Type:{" "}
-                    <span className="text-green-300">{generalInfo.type}</span>
-                  </div>
-                  <div className="mb-1">
-                    Season:{" "}
-                    <span className="text-green-300">{generalInfo.season}</span>
-                  </div>
-                  <div className="mb-1">
-                    Water needed:{" "}
-                    <span className="text-green-300">
-                      {generalInfo.waterNeeded}
-                    </span>
-                  </div>
-                  <div className="mb-1">
-                    Seed rate:{" "}
-                    <span className="text-green-300">
-                      {generalInfo.seedRate}
-                    </span>
-                  </div>
-                  <div className="mb-1">{plant.description}</div>
-                </div>
-              )}
-              <button
-                onClick={onRemovePlant}
-                className="px-4 py-1 rounded bg-red-500 text-white text-xs font-sans hover:bg-red-600 mt-1"
-              >
-                Remove Plant
-              </button>
+      {/* Plant Info Panel */}
+      {selectedTile && plant && (
+        <div className="fixed top-6 left-6 z-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-xl shadow-lg p-8 flex flex-col min-w-[360px] max-w-[480px] text-white max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="flex flex-col items-center">
+            <img
+              src={plant.img}
+              alt={plant.name}
+              className="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-emerald-400"
+            />
+            <h2 className="font-sans text-2xl mb-3 text-emerald-400">{plant.name}</h2>
+            <div className="w-full p-4 bg-black/20 rounded-lg mb-4">
+              <div className="font-sans text-sm mb-2 text-emerald-300">Position: ({selectedTile.x}, {selectedTile.z})</div>
+              <div className="font-sans text-sm mb-2 text-emerald-300">Size: {plant.size[0]}x{plant.size[1]} tiles</div>
             </div>
-          ) : (
+            {isZoomed ? (
+              <div className="w-full text-sm mb-4 space-y-3">
+                <div className="p-4 bg-black/20 rounded-lg">
+                  <h3 className="text-lg mb-2 text-emerald-400">Plant Status</h3>
+                  <div className="mb-2">
+                    Last watered: <span className="text-emerald-300 font-medium">{zoomedInfo.lastWatered}</span>
+                  </div>
+                  <div className="mb-2">
+                    Sunlight this week: <span className="text-emerald-300 font-medium">{zoomedInfo.sunlight}</span>
+                  </div>
+                  <div className="mb-2">
+                    Health: <span className="text-emerald-300 font-medium">{zoomedInfo.health}%</span>
+                  </div>
+                  <div className="mb-2">
+                    Water this week: <span className="text-emerald-300 font-medium">{zoomedInfo.waterThisWeek}/{zoomedInfo.waterGoal}</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="w-full text-sm mb-4 space-y-3">
+                <div className="p-4 bg-black/20 rounded-lg">
+                  <h3 className="text-lg mb-2 text-emerald-400">Plant Details</h3>
+                  <div className="mb-2">
+                    Type: <span className="text-emerald-300 font-medium">{generalInfo.type}</span>
+                  </div>
+                  <div className="mb-2">
+                    Season: <span className="text-emerald-300 font-medium">{generalInfo.season}</span>
+                  </div>
+                  <div className="mb-2">
+                    Water needed: <span className="text-emerald-300 font-medium">{generalInfo.waterNeeded}</span>
+                  </div>
+                  <div className="mb-2">
+                    Seed rate: <span className="text-emerald-300 font-medium">{generalInfo.seedRate}</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-black/20 rounded-lg">
+                  <h3 className="text-lg mb-2 text-emerald-400">Description</h3>
+                  <p className="text-white/90 leading-relaxed">{plant.description}</p>
+                </div>
+              </div>
+            )}
             <button
-              onClick={onShowPicker}
-              className="px-4 py-2 rounded bg-emerald-400 text-gray-900 font-sans hover:bg-emerald-300 w-full mt-2"
+              onClick={onRemovePlant}
+              className="px-6 py-2 rounded-lg bg-red-500 text-white text-sm font-sans hover:bg-red-600 transition-colors"
             >
-              Add Plant
+              Remove Plant
             </button>
-          )}
+          </div>
         </div>
       )}
+
       {showPlantPicker && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
           <PlantPickerOverlay onPick={onPickPlant} onClose={onClosePicker} />
         </div>
       )}
-    </div>
+    </>
   );
 }
 
@@ -268,23 +263,71 @@ function TilePageWithUI({
 
   const handlePlantPick = (plant) => {
     if (plantPickerTile) {
-      setTilePlants((prev) => ({
-        ...prev,
-        [`${plantPickerTile.x}-${plantPickerTile.z}`]: plant,
-      }));
-      setShowPlantPicker(false);
-      setPlantPickerTile(null);
+      // Check if the plant can be placed at the selected location
+      const canPlace = checkPlantPlacement(plantPickerTile.x, plantPickerTile.z, plant.size);
+      
+      if (canPlace) {
+        setTilePlants((prev) => ({
+          ...prev,
+          [`${plantPickerTile.x}-${plantPickerTile.z}`]: plant,
+        }));
+        setShowPlantPicker(false);
+        setPlantPickerTile(null);
+      } else {
+        // You could show a notification here that the plant can't be placed
+        alert("Cannot place plant here. Make sure there's enough space and no overlapping plants.");
+      }
     }
+  };
+
+  const checkPlantPlacement = (x, z, size) => {
+    // Check if the plant would extend beyond the grid
+    if (x + size[0] > width || z + size[1] > height) {
+      return false;
+    }
+
+    // Check if any tile in the plant's footprint is already occupied
+    for (let dx = 0; dx < size[0]; dx++) {
+      for (let dz = 0; dz < size[1]; dz++) {
+        const checkX = x + dx;
+        const checkZ = z + dz;
+        
+        // Check each tile position in tilePlants
+        for (const [key, existingPlant] of Object.entries(tilePlants)) {
+          const [baseX, baseZ] = key.split('-').map(Number);
+          if (
+            checkX >= baseX && 
+            checkX < baseX + existingPlant.size[0] &&
+            checkZ >= baseZ && 
+            checkZ < baseZ + existingPlant.size[1]
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   };
 
   const handleRemovePlant = () => {
     if (selectedTile) {
-      const key = `${selectedTile.x}-${selectedTile.z}`;
-      setTilePlants((prev) => {
-        const copy = { ...prev };
-        delete copy[key];
-        return copy;
-      });
+      // Find the base tile of the plant to remove
+      for (const [key, plant] of Object.entries(tilePlants)) {
+        const [baseX, baseZ] = key.split('-').map(Number);
+        if (
+          selectedTile.x >= baseX && 
+          selectedTile.x < baseX + plant.size[0] &&
+          selectedTile.z >= baseZ && 
+          selectedTile.z < baseZ + plant.size[1]
+        ) {
+          setTilePlants((prev) => {
+            const copy = { ...prev };
+            delete copy[`${baseX}-${baseZ}`];
+            return copy;
+          });
+          break;
+        }
+      }
     }
   };
 
