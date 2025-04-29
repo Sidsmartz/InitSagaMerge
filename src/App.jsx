@@ -3,9 +3,12 @@ import "./App.css";
 import { Experience } from "./components/Experience";
 import { useState, useEffect } from "react";
 import { TilePage, PlantPickerOverlay } from "./components/TilePage";
-import { Link, Routes, Route, useLocation } from "react-router-dom";
+import { Link, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import WeatherEffects from "./components/WeatherEffects"; // Import WeatherEffects component
 import axios from "axios";
+import { GardenPreferences } from './components/GardenPreferences';
+import { getGardenSuggestions } from './services/geminiService';
+import { GardenOverlay } from './components/GardenOverlay';
 
 function RightPane({
   width,
@@ -24,8 +27,10 @@ function RightPane({
   onChangeWeather,
   weather,
   onLocationSearch,
+  onClose,
 }) {
   const [location, setLocation] = useState("");
+  const navigate = useNavigate();
 
   const handleLocationChange = (e) => {
     setLocation(e.target.value);
@@ -72,7 +77,7 @@ function RightPane({
           <span className="font-sans text-lg">Controls</span>
           <Link
             to="/"
-            className="ml-2 px-3 py-1 rounded bg-plant-green text-plant-gray hover:bg-green-400 text-sm font-sans"
+            className="px-3 py-1 rounded bg-plant-green text-plant-gray hover:bg-green-400 text-sm font-sans"
           >
             Home
           </Link>
@@ -221,7 +226,7 @@ function RightPane({
 
       {showPlantPicker && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-          <PlantPickerOverlay onPick={onPickPlant} onClose={onClosePicker} />
+          <PlantPickerOverlay onPick={onPickPlant} onClose={onClose} />
         </div>
       )}
     </>
@@ -236,12 +241,13 @@ function TilePageWithUI({
   selectedTile,
   setSelectedTile,
 }) {
-  const [tilePlants, setTilePlants] = useState({}); // { 'x-z': plantObj }
+  const [tilePlants, setTilePlants] = useState({});
   const [showPlantPicker, setShowPlantPicker] = useState(false);
   const [plantPickerTile, setPlantPickerTile] = useState(null);
   const [zoomedPlantTile, setZoomedPlantTile] = useState(null);
   const [hoveredTile, setHoveredTile] = useState(null);
-  const [weather, setWeather] = useState("sunny"); // New weather state
+  const [weather, setWeather] = useState("sunny");
+  const [showOverlay, setShowOverlay] = useState(true);
 
   const handleSelect = ({ x, z }) => {
     const key = `${x}-${z}`;
@@ -372,13 +378,25 @@ function TilePageWithUI({
     fetchWeatherData(location);
   };
 
+  const handleSuggest = async (prompt) => {
+    try {
+      return await getGardenSuggestions(prompt);
+    } catch (error) {
+      console.error('Error getting suggestions:', error);
+      throw error;
+    }
+  };
+
   return (
     <div className="relative w-screen h-screen">
       <header className="fixed top-0 left-0 w-full z-10 bg-gray-800 font-sans bg-transparent p-4">
-        <h1 className="text-green-400 font-sans text-2xl text-center">
-          Reimagine and Recreate your Plants here!
-        </h1>
+        <div className="flex justify-between items-center max-w-7xl mx-auto">
+          <h1 className="text-green-400 font-sans text-2xl">
+            Reimagine and Recreate your Plants here!
+          </h1>
+        </div>
       </header>
+
       <Canvas
         camera={{
           fov: 60,
@@ -401,6 +419,28 @@ function TilePageWithUI({
           setHoveredTile={setHoveredTile}
         />
       </Canvas>
+
+      {/* Overlay Toggle Button - Bottom Right */}
+      <button
+        onClick={() => setShowOverlay(!showOverlay)}
+        className="fixed bottom-6 right-6 z-20 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors shadow-lg"
+      >
+        {showOverlay ? 'Hide Panel' : 'Show Panel'}
+      </button>
+
+      {showOverlay && (
+        <GardenOverlay
+          width={width}
+          height={height}
+          selectedTile={selectedTile}
+          tilePlants={tilePlants}
+          onClose={() => setShowOverlay(false)}
+          onSuggest={handleSuggest}
+          onRemovePlant={handleRemovePlant}
+          zoomedPlantTile={zoomedPlantTile}
+        />
+      )}
+
       <RightPane
         width={width}
         setWidth={setWidth}
@@ -417,8 +457,15 @@ function TilePageWithUI({
         zoomedPlantTile={zoomedPlantTile}
         onChangeWeather={handleWeatherChange}
         weather={weather}
-        onLocationSearch={handleLocationSearch} // Pass the location search handler
+        onLocationSearch={handleLocationSearch}
+        onClose={() => setShowPlantPicker(false)}
       />
+
+      {showPlantPicker && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
+          <PlantPickerOverlay onPick={handlePlantPick} onClose={() => setShowPlantPicker(false)} />
+        </div>
+      )}
     </div>
   );
 }

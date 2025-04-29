@@ -4,14 +4,28 @@ import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Camera controller component to move the camera smoothly
-function CameraController({ target, zoomedPlantTile }) {
+function CameraController({ target, zoomedPlantTile, tilePlants }) {
   const { camera, controls } = useThree();
   useFrame((_, delta) => {
     if (zoomedPlantTile && target) {
-      // Zoom in on the plant
-      const desired = new THREE.Vector3(target[0], 1, target[2] + 1.5);
-      camera.position.lerp(desired, delta * 2);
-      camera.lookAt(target[0], 0.15, target[2]);
+      // Get the plant size from tilePlants
+      const key = `${zoomedPlantTile.x}-${zoomedPlantTile.z}`;
+      const plant = tilePlants[key];
+      if (plant) {
+        // Calculate center position based on plant size
+        const centerX = target[0] + (plant.size[0] - 1) / 2;
+        const centerZ = target[2] + (plant.size[1] - 1) / 2;
+        
+        // Adjust camera position based on plant size
+        const maxSize = Math.max(plant.size[0], plant.size[1]);
+        const distance = 1.5 + maxSize * 0.5; // Increase distance for larger plants
+        const height = 0.5 + maxSize * 0.3; // Increase height for larger plants
+        
+        // Position camera to look at the center of the plant
+        const desired = new THREE.Vector3(centerX, height, centerZ + distance);
+        camera.position.lerp(desired, delta * 2);
+        camera.lookAt(centerX, 0.15, centerZ);
+      }
       if (controls) controls.enabled = true;
     } else if (target) {
       const desired = new THREE.Vector3(target[0], 5, target[2] + 5);
@@ -280,7 +294,7 @@ export const TilePage = ({width, height, selectedTile, setSelectedTile, tilePlan
       <ambientLight intensity={0.5} castShadow color={"green"}/>
       <directionalLight position={[5, 5, 5]} intensity={2} castShadow />
       <OrbitControls enableZoom={!!zoomedPlantTile} enablePan={!!zoomedPlantTile} />
-      <CameraController target={cameraTarget} zoomedPlantTile={zoomedPlantTile} />
+      <CameraController target={cameraTarget} zoomedPlantTile={zoomedPlantTile} tilePlants={tilePlants} />
       <TileGrid
         width={width}
         height={height}
