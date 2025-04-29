@@ -2,8 +2,14 @@ import { OrbitControls, ScrollControls } from "@react-three/drei";
 import { Office } from "./Office";
 import { Overlay } from "./Overlay";
 import { TilePage } from "./TilePage";
+import { useState } from "react";
 
 export const Experience = () => {
+  const [cameraAngle, setCameraAngle] = useState({
+    position: [2, 5, 5], // Example custom camera position
+    lookAt: [0, 0, 0],   // Example custom camera target
+  });
+
   return (
     <>
       {/* Ambient light for overall illumination */}
@@ -26,7 +32,7 @@ export const Experience = () => {
       {/* Scroll and Orbit controls */}
       <OrbitControls enableZoom={false} />
       <ScrollControls pages={3} damping={0.5} html>
-        <Office />
+        <Office cameraAngle={cameraAngle} /> {/* Pass cameraAngle to Office */}
         <Overlay />
       </ScrollControls>
     </>

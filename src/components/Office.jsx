@@ -1,48 +1,42 @@
-import {
-  useGLTF,
-  useScroll,
-  CubeCamera,
-  useTexture,
-}                           from "@react-three/drei";
+import { useGLTF, CubeCamera, useTexture, useScroll } from "@react-three/drei";
 import { useThree, useFrame } from "@react-three/fiber";
-import gsap                  from "gsap";
-import React, {
-  useLayoutEffect,
-  useRef,
-}                           from "react";
-import * as THREE            from "three";
+import gsap from "gsap";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import * as THREE from "three";
 
-/* ─── tweakables ──────────────────────────────────────────────────── */
+// Constants and tweakable values
 const WAYPOINTS = [
-  { pos: [ 2, -1, 1.5 ], rotY: -Math.PI / 6 },
-  { pos: [ -2,  0, 1.75], rotY:  Math.PI / 6 },
-  { pos: [ 2, -1,   2 ], rotY:  0            },
+  { pos: [2, -2, 1.5], rotY: -Math.PI / 6 },
+  { pos: [-2, 0, 1.75], rotY: Math.PI / 6 },
+  { pos: [2, -2, 2], rotY: 0 },
 ];
 
-const FIXED_CAM      = null;               // e.g. [[4,2,7], [0,0,0]]
-const ROUGH_INTENSITY = 1;               // 0 = none, 1 = normal, etc.
-const MOTION_START = 0.01;                // position where movement begins
-const MOTION_LENGTH = 1.0;                // fraction of scroll used for movement
-/* ─────────────────────────────────────────────────────────────────── */
+const FIXED_CAM = null; // e.g. [[4,2,7], [0,0,0]]
+const ROUGH_INTENSITY = 1; // 0 = none, 1 = normal, etc.
+const MOTION_START = 0.01; // Position where movement begins
+const MOTION_LENGTH = 1.0; // Fraction of scroll used for movement
 
 export function Office(props) {
-  /* ─── load assets ──────────────────────────────────────────────── */
   const { scene, animations } = useGLTF("/models/plant.glb");
   const roughMap = useTexture("/textures/terrain-roughness.jpg");
   roughMap.wrapS = roughMap.wrapT = THREE.RepeatWrapping;
 
-  /* ─── refs & helpers ───────────────────────────────────────────── */
-  const group  = useRef();
-  const tl     = useRef();
-  const mixer  = useRef();
+  const group = useRef();
+  const tl = useRef();
+  const mixer = useRef();
   const action = useRef();
   const scroll = useScroll();
   const { camera } = useThree();
 
-  const clip     = animations?.[0];
-  const clipDur  = clip?.duration ?? 1;
+  const [cameraAngle, setCameraAngle] = useState({
+    position: [0, 2, 5], // Default camera position
+    lookAt: [0, -1, 0], // Default camera lookAt position
+  });
 
-  /* ─── per-frame work ───────────────────────────────────────────── */
+  const clip = animations?.[0];
+  const clipDur = clip?.duration ?? 1;
+
+  // per-frame work
   useFrame(() => {
     const local = THREE.MathUtils.clamp(
       (scroll.offset - MOTION_START) / MOTION_LENGTH,
@@ -51,23 +45,26 @@ export function Office(props) {
 
     if (FIXED_CAM) {
       camera.position.set(...FIXED_CAM[0]);
-      camera.lookAt     (...FIXED_CAM[1]);
+      camera.lookAt(...FIXED_CAM[1]);
       return;
     }
 
-    tl.current?.progress(local);          // make sure the movement timeline scrubs
+    tl.current?.progress(local); // make sure the movement timeline scrubs
 
     if (action.current) {
       action.current.time = local * clipDur;
-      mixer.current.update(1e-6);       // tiny delta forces pose update
+      mixer.current.update(1e-6); // tiny delta forces pose update
     }
+
+    // Update camera position and lookAt
+    camera.position.set(...cameraAngle.position);
+    camera.lookAt(...cameraAngle.lookAt);
   });
 
-  /* ─── build timeline & mixer once ──────────────────────────────── */
+  // Build timeline & mixer once
   useLayoutEffect(() => {
-    /* waypoint GSAP timeline */
     const slice = 1 / WAYPOINTS.length;
-    tl.current  = gsap.timeline({ paused: true });
+    tl.current = gsap.timeline({ paused: true });
 
     WAYPOINTS.forEach((wp, i) => {
       const at = i * slice;
@@ -83,28 +80,27 @@ export function Office(props) {
       );
     });
 
-    /* animation mixer – run action at timeScale 0 so bindings stay live */
+    // Set up animation mixer
     if (clip) {
-      mixer.current  = new THREE.AnimationMixer(scene);
+      mixer.current = new THREE.AnimationMixer(scene);
       action.current = mixer.current.clipAction(clip);
       action.current.play();
       action.current.timeScale = 0;
     }
 
-    /* apply roughness map & other material tweaks */
+    // Apply roughness map & other material tweaks
     scene.traverse((node) => {
       if (node.isMesh && node.material) {
         node.castShadow = node.receiveShadow = true;
         node.material.roughnessMap = roughMap;
-        node.material.roughness   *= ROUGH_INTENSITY;
-        node.material.metalness    = 0.4;
+        node.material.roughness *= ROUGH_INTENSITY;
+        node.material.metalness = 0.4;
         node.material.envMapIntensity = 1;
-        node.material.needsUpdate  = true;
+        node.material.needsUpdate = true;
       }
     });
   }, [clip, scene, roughMap]);
 
-  /* ─── JSX ──────────────────────────────────────────────────────── */
   return (
     <group
       {...props}
