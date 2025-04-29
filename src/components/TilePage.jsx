@@ -23,7 +23,7 @@ function CameraController({ target, zoomedPlantTile, tilePlants }) {
         
         // Position camera to look at the center of the plant
         const desired = new THREE.Vector3(centerX, height, centerZ + distance);
-        camera.position.lerp(desired, delta * 2);
+      camera.position.lerp(desired, delta * 2);
         camera.lookAt(centerX, 0.15, centerZ);
       }
       if (controls) controls.enabled = true;
@@ -154,21 +154,21 @@ function AnimatedTile({ x, z, isNew, selected, onSelect, plant, onPlantClick, zo
         </mesh>
       )}
       {isBase && plant && (
-        <PlantModel
-          position={[x, 0, z]}
-          onClick={(e) => {
-            e.stopPropagation();
-            onPlantClick({ x, z, plant });
-          }}
-          onDoubleClick={(e) => {
-            e.stopPropagation();
-            if (showPlant && plant) onPlantDoubleClick({ x, z, plant });
-          }}
-          visible={showPlant}
+      <PlantModel
+        position={[x, 0, z]}
+        onClick={(e) => {
+          e.stopPropagation();
+          onPlantClick({ x, z, plant });
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          if (showPlant && plant) onPlantDoubleClick({ x, z, plant });
+        }}
+        visible={showPlant}
           modelPath={plant.model}
           scale={plant.scale}
           size={plant.size}
-        />
+      />
       )}
     </group>
   );
