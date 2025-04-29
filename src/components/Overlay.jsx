@@ -48,39 +48,41 @@ export const Overlay = () => {
       <div className="w-screen font-sans text-green-300 relative">
         {/* ---------- first section ---------------------------------- */}
         <Section opacity={op[0]}>
-          <h1 className="text-3xl font-sans mb-4">Welcome to Plantify!</h1>
-          <p className="text-gray-200/80 font-sans mb-4">
-            Your one-stop solution to all environmental needs
+          <h1 className="text-3xl font-extralight mb-6">🌿 From Tiles to Paradise!</h1>
+          <h2 className="text-xl font-extralight mb-4 text-emerald-200">Small space, BIG dreams!</h2>
+          <p className="text-gray-200/90 font-extralight text-lg leading-relaxed">
+            Let's turn your balcony or terrace into a mini farm packed with colors, flavors, and life.
           </p>
-          <ul className="space-y-1 text-sm font-sans tracking-wide">
-          <li>Learn to Plant</li>
-          <li>Seek to absorb</li>
-          <li>and to Grow!</li>
-          </ul>
         </Section>
 
         {/* ---------- middle section -------------------------------- */}
         <Section right opacity={op[1]}>
-          <h1 className="text-2xl mb-4">Skill set 🔥</h1>
-          <div className="flex gap-8 text-sm tracking-wide">
-            <div>
-              <p className="font-sans mb-1">Frontend 🚀</p>
-              <ul className="space-y-1">
-                <li>React</li><li>Vue</li><li>Tailwind</li>
-              </ul>
-            </div>
-            <div>
-              <p className="font-sans mb-1">Backend 🔬</p>
-              <ul className="space-y-1">
-                <li>Node</li><li>tRPC</li><li>PostgreSQL</li>
-              </ul>
-            </div>
-          </div>
+          <h2 className="text-xl font-extralight mb-2 text-emerald-200/80">Easy Steps</h2>
+          <h1 className="text-2xl mb-6">🎯 How It's Done</h1>
+          <ul className="space-y-4 text-sm tracking-wide font-extralight">
+            <li className="flex items-start gap-3">
+              <span className="text-emerald-300">➔</span>
+              <span>Map your space with custom tile layouts.</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-emerald-300">➔</span>
+              <span>Choose from 40+ amazing plants!</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-emerald-300">➔</span>
+              <span>Get smart advice based on your region.</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-emerald-300">➔</span>
+              <span>Track your garden's journey — from sprout to bloom!</span>
+            </li>
+          </ul>
         </Section>
 
         {/* ---------- last section ---------------------------------- */}
         <Section opacity={op[2]}>
-          <h1 className="text-2xl mb-6 font-sans">Plant a tree 🌳</h1>
+          <h1 className="text-2xl mb-6 font-sans">🌱 Build Your Dream Garden
+          </h1>
           <button
             onClick={() => navigate("/tile")}
             className="px-6 py-2 rounded-full border border-emerald-300
@@ -88,6 +90,14 @@ export const Overlay = () => {
                        hover:bg-emerald-300/20 transition"
           >
             Go to Tile Grid
+          </button>
+          <button
+            onClick={() => navigate("/plants")}
+            className="px-6 py-2 ml-4 rounded-full border border-emerald-300
+                       text-emerald-300 bg-transparent
+                       hover:bg-emerald-300/20 transition"
+          >
+            Go to Plant Database
           </button>
         </Section>
       </div>

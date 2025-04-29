@@ -9,6 +9,7 @@ import axios from "axios";
 import { GardenPreferences } from './components/GardenPreferences';
 import { getGardenSuggestions } from './services/geminiService';
 import { GardenOverlay } from './components/GardenOverlay';
+import PlantCardsPage from "./components/PlantsCardPage";
 
 function RightPane({
   width,
@@ -532,6 +533,7 @@ function App() {
           />
         }
       />
+      <Route path="/plants" element={<PlantCardsPage/>}/>
     </Routes>
   );
 }
