@@ -28,9 +28,10 @@ function RightPane({
   weather,
   onLocationSearch,
   onClose,
+  weatherInfo,
+  weatherError,
 }) {
   const [location, setLocation] = useState("");
-  const navigate = useNavigate();
 
   const handleLocationChange = (e) => {
     setLocation(e.target.value);
@@ -86,7 +87,7 @@ function RightPane({
         {/* Weather Controls */}
         <div className="mb-4">
           <label className="text-xs text-white/80 mb-1 block">Weather</label>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 mb-2">
             <button
               onClick={() => onChangeWeather("sunny")}
               className={`px-3 py-1 rounded text-xs font-sans ${weather === "sunny" ? 'bg-yellow-500' : 'bg-yellow-500/50'}`}
@@ -106,24 +107,40 @@ function RightPane({
               Snowy
             </button>
           </div>
+          
+          {/* Weather Info Display */}
+          {weatherInfo && (
+            <div className="bg-white/10 rounded-lg p-3 mb-2 text-sm">
+              <p className="text-emerald-300">Current Weather in {weatherInfo.location}</p>
+              <p className="text-white">{weatherInfo.condition}</p>
+              <p className="text-white">{weatherInfo.temp_c}°C / {weatherInfo.temp_f}°F</p>
+            </div>
+          )}
+          {weatherError && (
+            <div className="bg-red-500/20 text-red-200 rounded-lg p-3 mb-2 text-sm">
+              {weatherError}
+            </div>
+          )}
         </div>
 
         {/* Location Search */}
         <div className="mb-4">
           <label className="text-xs text-white/80 mb-1 block">Search Location</label>
-          <input
-            type="text"
-            value={location}
-            onChange={handleLocationChange}
-            className="border border-white/20 bg-white/10 text-white rounded p-2 w-full mb-2"
-            placeholder="Enter location"
-          />
-          <button
-            onClick={handleSearch}
-            className="px-4 py-1 rounded bg-emerald-400 text-gray-900 font-sans hover:bg-emerald-300 w-full"
-          >
-            Search Weather
-          </button>
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={location}
+              onChange={handleLocationChange}
+              className="flex-1 border border-white/20 bg-white/10 text-white rounded p-2"
+              placeholder="Enter location"
+            />
+            <button
+              onClick={handleSearch}
+              className="px-4 py-2 rounded bg-emerald-400 text-gray-900 font-sans hover:bg-emerald-300"
+            >
+              Search
+            </button>
+          </div>
         </div>
 
         {/* Grid Settings */}
@@ -248,6 +265,8 @@ function TilePageWithUI({
   const [hoveredTile, setHoveredTile] = useState(null);
   const [weather, setWeather] = useState("sunny");
   const [showOverlay, setShowOverlay] = useState(true);
+  const [weatherInfo, setWeatherInfo] = useState(null);
+  const [weatherError, setWeatherError] = useState(null);
 
   const handleSelect = ({ x, z }) => {
     const key = `${x}-${z}`;
@@ -341,41 +360,53 @@ function TilePageWithUI({
     setZoomedPlantTile({ x, z });
   };
 
-  const handleWeatherChange = (newWeather) => {
-    setWeather(newWeather);
-  };
-
   // Fetch weather data for location
   const fetchWeatherData = async (location) => {
-    const options = {
-      method: "GET",
-      url: "https://weatherapi-com.p.rapidapi.com/current.json",
-      params: { q: location },
-      headers: {
-        "x-rapidapi-key": "2431ac6813mshdfd7013cc52e529p1e9289jsnc3af44fa95af",
-        "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
-      },
-    };
-
     try {
-      const response = await axios.request(options);
-      const weatherCondition =
-        response.data.current.condition.text.toLowerCase();
-      if (weatherCondition.includes("sunny")) {
+      const response = await axios.get("https://weatherapi-com.p.rapidapi.com/current.json", {
+        params: { q: location },
+        headers: {
+          "x-rapidapi-key": "2ddf0943bbmsh2bab9cde13a630cp1b374bjsnb81ab8107196",
+          "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
+        },
+      });
+
+      const data = response.data;
+      const weatherInfo = {
+        location: data.location.name,
+        condition: data.current.condition.text,
+        temp_c: data.current.temp_c,
+        temp_f: data.current.temp_f
+      };
+      
+      // Update weather state based on condition
+      const weatherCondition = data.current.condition.text.toLowerCase();
+      if (weatherCondition.includes("sunny") || weatherCondition.includes("clear")) {
         setWeather("sunny");
-      } else if (weatherCondition.includes("rain")) {
+      } else if (weatherCondition.includes("rain") || weatherCondition.includes("drizzle")) {
         setWeather("rainy");
-      } else if (weatherCondition.includes("snow")) {
+      } else if (weatherCondition.includes("snow") || weatherCondition.includes("sleet")) {
         setWeather("snowy");
       }
+      
+      // Update weather info in the RightPane
+      setWeatherInfo(weatherInfo);
+      setWeatherError(null);
     } catch (error) {
       console.error("Error fetching weather data:", error);
+      let errorMessage = "Failed to fetch weather data. Please try again.";
+      if (error.response) {
+        if (error.response.status === 400) {
+          errorMessage = "Invalid location. Please enter a valid city name.";
+        } else if (error.response.status === 403) {
+          errorMessage = "API key error. Please try again later.";
+        }
+      } else if (error.request) {
+        errorMessage = "Network error. Please check your internet connection.";
+      }
+      setWeatherError(errorMessage);
+      setWeatherInfo(null);
     }
-  };
-
-  // Trigger weather search from the right pane
-  const handleLocationSearch = (location) => {
-    fetchWeatherData(location);
   };
 
   const handleSuggest = async (prompt) => {
@@ -455,10 +486,12 @@ function TilePageWithUI({
         onPickPlant={handlePlantPick}
         onClosePicker={() => setShowPlantPicker(false)}
         zoomedPlantTile={zoomedPlantTile}
-        onChangeWeather={handleWeatherChange}
+        onChangeWeather={setWeather}
         weather={weather}
-        onLocationSearch={handleLocationSearch}
+        onLocationSearch={fetchWeatherData}
         onClose={() => setShowPlantPicker(false)}
+        weatherInfo={weatherInfo}
+        weatherError={weatherError}
       />
 
       {showPlantPicker && (
